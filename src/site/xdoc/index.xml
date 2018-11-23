@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document>
+    <properties>
+        <title>Module Forms MultiviewMapLeaflet</title>
+    </properties>
+    <body>
+        <section name="Module Forms MultiviewMapLeaflet">
+            <subsection name="Introduction">
+                <p>A simple multiview map provider based on plugin-leaflet.</p>
+            </subsection>
+            <subsection name="Configuration">
+                <p>Add this module to your site:
+                    <source><![CDATA[
+<dependency>
+    <groupId>fr.paris.lutece.plugins</groupId>
+    <artifactId>module-forms-multiviewmapleaflet</artifactId>
+    <version>[1.0.0]</version>
+    <type>lutece-plugin</type>
+</dependency>]]></source>
+                </p>
+                <p>In the forms spring context configuration file, use
+                    <source><![CDATA[<alias name="forms-multiviewmapleaflet.mapProvider" alias="forms.multiviewMap"/>]]></source>
+                </p>
+            </subsection>
+            <subsection name="Usage">
+                <p>The leaflet map will show on the multiview page if this module is enabled and there is a geolocation column.</p>
+                <p>
+                    <img src="images/multiviewmapleaflet.png" />
+                </p>
+            </subsection>
+        </section>
+    </body>
+</document>
+
