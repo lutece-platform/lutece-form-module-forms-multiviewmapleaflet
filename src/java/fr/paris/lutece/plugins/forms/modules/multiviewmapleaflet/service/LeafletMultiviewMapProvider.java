@@ -42,7 +42,7 @@ import fr.paris.lutece.portal.service.template.AppTemplateService;
 public final class LeafletMultiviewMapProvider implements IMultiviewMapProvider
 {
 
-    private static final String LEAFLET_MULTIVIEWMAP_TEMPLATE = "admin/plugins/forms/modules/multiviewmapleafet/map.html";
+    private static final String LEAFLET_MULTIVIEWMAP_TEMPLATE = "admin/plugins/forms/modules/multiviewmapleaflet/map.html";
 
     @Override
     public String getMapTemplate( )
