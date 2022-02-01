@@ -38,10 +38,11 @@ $(window).load(function () {
     var osmAttrib='Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors';
     var osm = new L.TileLayer(osmUrl, {minZoom: 8, maxZoom: 16, attribution: osmAttrib}).addTo(map);
     var markers = L.markerClusterGroup().addTo(map);
-    for (var i = 0; i < points.length; i++) {
-        var coordinates = points[i]["geometry"]["coordinates"];
+    var features= points.features;
+    for (var i = 0; i < features.length; i++) {
+        var coordinates = features[i]["geometry"]["coordinates"];
         var marker = L.marker([coordinates[1],coordinates[0]]);
-        var properties = points[i]["properties"];
+        var properties = features[i]["properties"];
         marker.bindPopup(properties["popupContent"])
         markers.addLayer(marker);
     }
