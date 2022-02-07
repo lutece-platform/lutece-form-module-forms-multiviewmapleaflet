@@ -1,36 +1,30 @@
 var loadresource;
-
 loadresource = document.createElement('link');
 loadresource.setAttribute("rel", "stylesheet");
 loadresource.setAttribute("type", "text/css");
 loadresource.setAttribute("href", "js/plugins/leaflet/leaflet/leaflet.css");
 document.getElementsByTagName("head")[0].appendChild(loadresource);
-
 loadresource = document.createElement('link');
 loadresource.setAttribute("rel", "stylesheet");
 loadresource.setAttribute("type", "text/css");
 loadresource.setAttribute("href", "js/plugins/leaflet/leaflet/MarkerCluster.css");
 document.getElementsByTagName("head")[0].appendChild(loadresource);
-
 loadresource = document.createElement('link');
 loadresource.setAttribute("rel", "stylesheet");
 loadresource.setAttribute("type", "text/css");
 loadresource.setAttribute("href", "js/plugins/leaflet/leaflet/MarkerCluster.Default.css");
 document.getElementsByTagName("head")[0].appendChild(loadresource);
-
 loadresource = document.createElement('script');
 loadresource.setAttribute("type", "text/javascript");
-loadresource.setAttribute("src",   "js/plugins/leaflet/leaflet/leaflet.js" );
+loadresource.setAttribute("src", "js/plugins/leaflet/leaflet/leaflet.js" );
 loadresource.async = false;
 document.getElementsByTagName("head")[0].appendChild(loadresource);
-
 loadresource = document.createElement('script');
 loadresource.setAttribute("type", "text/javascript");
-loadresource.setAttribute("src",   "js/plugins/leaflet/leaflet/leaflet.markercluster.js" );
+loadresource.setAttribute("src", "js/plugins/leaflet/leaflet/leaflet.markercluster.js" );
 loadresource.async = false;
 document.getElementsByTagName("head")[0].appendChild(loadresource);
-
-$(window).load(function () {
+$(window).on('load', function(){
     var map = L.map('map').setView([48.85632, 2.33272], 12);
     var points = JSON.parse($("#geojson_points").text());
     // create the tile layer with correct attribution
