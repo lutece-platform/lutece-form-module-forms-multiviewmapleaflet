@@ -1,2 +1,7 @@
-<div id="map" style="height: 400px; width: 100%"></div>
-<script src="js/plugins/forms/modules/multiviewmapleaflet/forms-multiview-map.js"></script>
+<@div class='position-relative'>
+    <@div id='forms-admin-map' params='style="height: 400px; width: 100%"'></@div>
+    <@button color='default' id='admin-forms-map-toggle'>
+        <@icon style='compress' title='#i18n{module.forms.multiviewmapleaflet.map.show} / #i18n{module.forms.multiviewmapleaflet.map.hide} #i18n{module.forms.multiviewmapleaflet.map.label.prefix} #i18n{module.forms.multiviewmapleaflet.map.label}' />
+    </@button> 
+</@div>
+<script src="js/admin/plugins/forms/modules/multiviewmapleaflet/forms-multiview-map.js"></script>

@@ -24,8 +24,9 @@ loadresource.setAttribute("type", "text/javascript");
 loadresource.setAttribute("src", "js/plugins/leaflet/leaflet/leaflet.markercluster.js" );
 loadresource.async = false;
 document.getElementsByTagName("head")[0].appendChild(loadresource);
+
 $(window).on('load', function(){
-    var map = L.map('map').setView([48.85632, 2.33272], 12);
+    var map = L.map('forms-admin-map').setView([48.85632, 2.33272], 12);
     var points = JSON.parse($("#geojson_points").text());
     // create the tile layer with correct attribution
     var osmUrl='http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
@@ -41,3 +42,19 @@ $(window).on('load', function(){
         markers.addLayer(marker);
     }
 });
+
+/* Add local storage param to show/hide map */
+$( function(){
+    const map = '#forms-admin-map', btnMap = '#forms-admin-map + button';
+    let mapVisibity = localStorage.getItem( 'admin-forms-map-visibility' );
+    let isMapVisible = mapVisibity != null ? ( mapVisibity === 'true' ) : true;
+    if( !isMapVisible ){
+        $( map ).toggle();
+        $( btnMap ).children().toggleClass('fa-expand');
+    }
+    $( '#admin-forms-map-toggle' ).on( 'click', function(){
+        $( map ).toggle();
+        $( btnMap ).children().toggleClass('fa-expand');
+        localStorage.setItem( 'admin-forms-map-visibility' , !isMapVisible )
+    });
+})
