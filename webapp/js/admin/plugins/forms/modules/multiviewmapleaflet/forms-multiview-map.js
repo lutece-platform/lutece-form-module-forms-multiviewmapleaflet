@@ -35,11 +35,24 @@ $(window).on('load', function(){
     var markers = L.markerClusterGroup().addTo(map);
     var features= points.features;
     for (var i = 0; i < features.length; i++) {
-        var coordinates = features[i]["geometry"]["coordinates"];
-        var marker = L.marker([coordinates[1],coordinates[0]]);
-        var properties = features[i]["properties"];
-        marker.bindPopup(properties["popupContent"])
-        markers.addLayer(marker);
+		if ( features[i]["geometry"]["type"] == "Point" ) {
+	        var coordinates = features[i]["geometry"]["coordinates"];
+	        var marker = L.marker([coordinates[1],coordinates[0]]);
+	        var properties = features[i]["properties"];
+	        marker.bindPopup(properties["popupContent"])
+	        markers.addLayer(marker);
+        }
+        else if ( features[i]["geometry"]["type"] == "Polygon" ) {
+	        var coordinates = features[i]["geometry"]["coordinates"];
+	        var polygon = L.polygon(coordinates );
+	    	markers.addLayer(polygon);
+        }
+        else if ( features[i]["geometry"]["type"] == "Polyline" ) {
+	        var coordinates = features[i]["geometry"]["coordinates"];
+	        var polyline = L.polyline(coordinates );
+	    	markers.addLayer(polyline);
+        }
+        
     }
 });
 
