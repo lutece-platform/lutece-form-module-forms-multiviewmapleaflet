@@ -12,15 +12,53 @@ Add this module to your site:
 <dependency>
     <groupId>fr.paris.lutece.plugins</groupId>
     <artifactId>module-forms-multiviewmapleaflet</artifactId>
-    <version>[1.0.0]</version>
+    <version>[2.0.0]</version>
     <type>lutece-plugin</type>
 </dependency>
 ```
 
-In the forms spring context configuration file, use
-```xml
-<alias name="forms-multiviewmapleaflet.mapProvider" alias="forms.multiviewMap"/>
+Then name this module's provider in the site configuration — `plugin-forms` reads the property
+`forms.mapProvider.beanName.list` and selects the CDI bean by name:
+```properties
+forms.mapProvider.beanName.list=forms-multiviewmapleaflet.mapProvider
 ```
+
+### Tile source
+
+The map draws on OpenStreetMap tiles by default. Point it somewhere else — a corporate proxy, the
+Géoplateforme, a self-hosted tile server — with two properties:
+```properties
+forms-multiviewmapleaflet.tile.url=https://tile.openstreetmap.org/{z}/{x}/{y}.png
+forms-multiviewmapleaflet.tile.attribution=Map data &copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors
+```
+
+The tile server has to answer CORS (`Access-Control-Allow-Origin`): the back office is served with
+`Cross-Origin-Embedder-Policy: require-corp`, which refuses a cross-origin image fetched without CORS unless it
+carries a `Cross-Origin-Resource-Policy` header — tile servers don't. The module therefore fetches its tiles in
+CORS mode (`crossorigin="anonymous"`); OpenStreetMap answers it. A tile server without CORS needs, on the same
+screen, a configuration item on the `Cross-Origin-Embedder-Policy` header as well (`credentialless`, or none).
+
+### Allow the tile host in the back-office Content-Security-Policy
+
+**Without this step the map draws grey**: Leaflet builds the map and places the markers, but every tile is
+refused. The back-office policy ships with `img-src 'self' data: blob:` and a few Google hosts, and no tile
+server. The host configured above has to be allowed.
+
+Do it **for the multiview screen only** rather than for the whole back office. *Système > Gestion des en-têtes
+de sécurité*, open the `Content-Security-Policy` header, and add a configuration item:
+
+| field | value |
+|---|---|
+| url pattern | `/jsp/admin/plugins/forms/MultiviewForms.jsp**` |
+| custom value | the shipped policy, with the tile host added to `img-src` |
+
+The pattern is matched (Ant style) against `servletPath` plus the query string, and the custom value replaces
+the whole header on the screens that match — so copy the site's current policy and add the host to its
+`img-src` directive rather than writing a new policy from scratch.
+
+A `<meta http-equiv="Content-Security-Policy">` in a template does **not** work here: policies delivered by
+different mechanisms are enforced conjunctively ([CSP Level 3, §8.1](https://www.w3.org/TR/CSP3/)), so a second
+policy can only restrict what the header already allows, never widen it.
 
 ## Usage
 

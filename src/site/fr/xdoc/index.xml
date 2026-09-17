@@ -14,12 +14,51 @@
 <dependency>
     <groupId>fr.paris.lutece.plugins</groupId>
     <artifactId>module-forms-multiviewmapleaflet</artifactId>
-    <version>[1.0.0]</version>
+    <version>[2.0.0]</version>
     <type>lutece-plugin</type>
 </dependency>]]></source>
                 </p>
-                <p>Dans le fichier de configuration du contexte spring de forms forms_context.xml, utiliser
-                    <source><![CDATA[<alias name="forms-multiviewmapleaflet.mapProvider" alias="forms.multiviewMap"/>]]></source>
+                <p>Puis désigner le provider de ce module dans la configuration du site : plugin-forms lit la
+                    propriété <code>forms.mapProvider.beanName.list</code> et sélectionne le bean CDI par son nom.
+                    <source><![CDATA[forms.mapProvider.beanName.list=forms-multiviewmapleaflet.mapProvider]]></source>
+                </p>
+            </subsection>
+            <subsection name="Source des tuiles">
+                <p>La carte s'appuie sur les tuiles OpenStreetMap par défaut. Deux propriétés permettent de la
+                    pointer ailleurs : un proxy d'entreprise, la Géoplateforme, un serveur de tuiles interne.
+                    <source><![CDATA[forms-multiviewmapleaflet.tile.url=https://tile.openstreetmap.org/{z}/{x}/{y}.png
+forms-multiviewmapleaflet.tile.attribution=Map data &amp;copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors]]></source>
+                </p>
+            </subsection>
+            <subsection name="Le serveur de tuiles doit répondre en CORS">
+                <p>Le back-office est servi avec <code>Cross-Origin-Embedder-Policy: require-corp</code>, qui
+                    refuse une image d'une autre origine chargée sans CORS si elle ne porte pas d'en-tête
+                    <code>Cross-Origin-Resource-Policy</code> - les serveurs de tuiles n'en envoient pas. Le
+                    module charge donc ses tuiles en mode CORS (<code>crossorigin="anonymous"</code>) ;
+                    OpenStreetMap répond <code>Access-Control-Allow-Origin</code>. Un serveur de tuiles sans
+                    CORS demande en plus, sur le même écran, un élément de configuration sur l'en-tête
+                    <code>Cross-Origin-Embedder-Policy</code> (<code>credentialless</code>, ou aucun).
+                </p>
+            </subsection>
+            <subsection name="Autoriser l'hôte des tuiles dans la CSP du back-office">
+                <p><strong>Sans cette étape le fond de carte reste gris</strong> : Leaflet construit bien la carte
+                    et pose les marqueurs, mais chaque tuile est refusée. La politique livrée avec le back-office
+                    contient <code>img-src 'self' data: blob:</code> et quelques hôtes Google, aucun serveur de
+                    tuiles. L'hôte configuré ci-dessus doit y être autorisé.
+                </p>
+                <p>À faire <strong>sur le seul écran multiview</strong>, pas sur tout le back-office. Dans
+                    <i>Système &gt; Gestion des en-têtes de sécurité</i>, ouvrir l'en-tête
+                    <code>Content-Security-Policy</code> et ajouter un élément de configuration dont le motif
+                    d'URL est <code>/jsp/admin/plugins/forms/MultiviewForms.jsp**</code> et dont la valeur
+                    personnalisée reprend la politique du site en ajoutant l'hôte des tuiles à sa directive
+                    <code>img-src</code>. Le motif est comparé à la manière d'Ant sur le chemin de servlet suivi
+                    de la chaîne de requête, et la valeur personnalisée remplace tout l'en-tête sur les écrans
+                    qui correspondent.
+                </p>
+                <p>Une balise <code>&lt;meta http-equiv="Content-Security-Policy"&gt;</code> dans un gabarit ne
+                    fonctionne pas ici : les politiques livrées par des mécanismes différents s'appliquent
+                    conjointement (<a href="https://www.w3.org/TR/CSP3/">CSP niveau 3, section 8.1</a>), donc une
+                    seconde politique ne peut que restreindre ce que l'en-tête autorise déjà, jamais l'élargir.
                 </p>
             </subsection>
             <subsection name="Usage">

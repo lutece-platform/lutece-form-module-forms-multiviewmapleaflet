@@ -14,12 +14,50 @@
 <dependency>
     <groupId>fr.paris.lutece.plugins</groupId>
     <artifactId>module-forms-multiviewmapleaflet</artifactId>
-    <version>[1.0.0]</version>
+    <version>[2.0.0]</version>
     <type>lutece-plugin</type>
 </dependency>]]></source>
                 </p>
-                <p>In the forms spring context configuration file, use
-                    <source><![CDATA[<alias name="forms-multiviewmapleaflet.mapProvider" alias="forms.multiviewMap"/>]]></source>
+                <p>Then name this module's provider in the site configuration: plugin-forms reads the property
+                    <code>forms.mapProvider.beanName.list</code> and selects the CDI bean by name.
+                    <source><![CDATA[forms.mapProvider.beanName.list=forms-multiviewmapleaflet.mapProvider]]></source>
+                </p>
+            </subsection>
+            <subsection name="Tile source">
+                <p>The map draws on OpenStreetMap tiles by default. Point it somewhere else - a corporate proxy,
+                    the Geoplateforme, a self-hosted tile server - with two properties.
+                    <source><![CDATA[forms-multiviewmapleaflet.tile.url=https://tile.openstreetmap.org/{z}/{x}/{y}.png
+forms-multiviewmapleaflet.tile.attribution=Map data &amp;copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors]]></source>
+                </p>
+            </subsection>
+            <subsection name="The tile server has to answer CORS">
+                <p>The back office is served with <code>Cross-Origin-Embedder-Policy: require-corp</code>, which
+                    refuses a cross-origin image fetched without CORS unless it carries a
+                    <code>Cross-Origin-Resource-Policy</code> header - tile servers don't. The module therefore
+                    fetches its tiles in CORS mode (<code>crossorigin="anonymous"</code>); OpenStreetMap answers
+                    <code>Access-Control-Allow-Origin</code>. A tile server without CORS needs, on the same
+                    screen, a configuration item on the <code>Cross-Origin-Embedder-Policy</code> header as
+                    well (<code>credentialless</code>, or none).
+                </p>
+            </subsection>
+            <subsection name="Allow the tile host in the back-office Content-Security-Policy">
+                <p><strong>Without this step the map draws grey</strong>: Leaflet builds the map and places the
+                    markers, but every tile is refused. The back-office policy ships with
+                    <code>img-src 'self' data: blob:</code> and a few Google hosts, and no tile server. The host
+                    configured above has to be allowed.
+                </p>
+                <p>Do it <strong>for the multiview screen only</strong> rather than for the whole back office.
+                    In <i>Systeme &gt; Gestion des en-tetes de securite</i>, open the
+                    <code>Content-Security-Policy</code> header and add a configuration item whose url pattern is
+                    <code>/jsp/admin/plugins/forms/MultiviewForms.jsp**</code> and whose custom value is the
+                    site's current policy with the tile host added to its <code>img-src</code> directive. The
+                    pattern is matched Ant-style against the servlet path plus the query string, and the custom
+                    value replaces the whole header on the screens that match.
+                </p>
+                <p>A <code>&lt;meta http-equiv="Content-Security-Policy"&gt;</code> in a template does
+                    <strong>not</strong> work here: policies delivered by different mechanisms are enforced
+                    conjunctively (<a href="https://www.w3.org/TR/CSP3/">CSP Level 3, section 8.1</a>), so a
+                    second policy can only restrict what the header already allows, never widen it.
                 </p>
             </subsection>
             <subsection name="Usage">

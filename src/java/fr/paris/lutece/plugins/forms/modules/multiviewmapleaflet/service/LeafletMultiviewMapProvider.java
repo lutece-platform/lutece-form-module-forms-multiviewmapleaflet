@@ -33,20 +33,52 @@
  */
 package fr.paris.lutece.plugins.forms.modules.multiviewmapleaflet.service;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+
 import fr.paris.lutece.plugins.forms.service.IMultiviewMapProvider;
 import fr.paris.lutece.portal.service.template.AppTemplateService;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 /**
  * Simple Leaflet + MarkerCluster implementation of IMultiviewMapProvider
  */
-public final class LeafletMultiviewMapProvider implements IMultiviewMapProvider
+@ApplicationScoped
+@Named( LeafletMultiviewMapProvider.BEAN_NAME )
+public class LeafletMultiviewMapProvider implements IMultiviewMapProvider
 {
 
-    private static final String LEAFLET_MULTIVIEWMAP_TEMPLATE = "admin/plugins/forms/modules/multiviewmapleaflet/map.html";
+    /**
+     * Name to list in the forms.mapProvider.beanName.list property to select this provider.
+     */
+    public static final String BEAN_NAME = "forms-multiviewmapleaflet.mapProvider";
 
+    private static final String LEAFLET_MULTIVIEWMAP_TEMPLATE = "admin/plugins/forms/modules/multiviewmapleaflet/map.html";
+    private static final String MARK_TILE_URL = "tile_url";
+    private static final String MARK_TILE_ATTRIBUTION = "tile_attribution";
+
+    @Inject
+    @ConfigProperty( name = "forms-multiviewmapleaflet.tile.url", defaultValue = "https://tile.openstreetmap.org/{z}/{x}/{y}.png" )
+    private String _strTileUrl;
+
+    @Inject
+    @ConfigProperty( name = "forms-multiviewmapleaflet.tile.attribution", defaultValue = "Map data &copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors" )
+    private String _strTileAttribution;
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getMapTemplate( )
     {
-        return AppTemplateService.getTemplate( LEAFLET_MULTIVIEWMAP_TEMPLATE ).getHtml( );
+        Map<String, Object> model = new HashMap<>( );
+        model.put( MARK_TILE_URL, _strTileUrl );
+        model.put( MARK_TILE_ATTRIBUTION, _strTileAttribution );
+
+        return AppTemplateService.getTemplate( LEAFLET_MULTIVIEWMAP_TEMPLATE, null, model ).getHtml( );
     }
 }
