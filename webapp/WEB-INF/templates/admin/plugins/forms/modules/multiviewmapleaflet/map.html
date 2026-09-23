@@ -3,7 +3,7 @@
 <#assign mapParams><#outputformat "HTML">style="height: 400px; width: 100%" data-tile-url="${tile_url}" data-tile-attribution="${tile_attribution}"</#outputformat></#assign>
 <@div class='position-relative'>
     <@div id='forms-admin-map' params=mapParams></@div>
-    <@button color='default' id='admin-forms-map-toggle'>
+    <@button color='light' id='admin-forms-map-toggle'>
         <@icon style='arrows-minimize' title='#i18n{module.forms.multiviewmapleaflet.map.show} / #i18n{module.forms.multiviewmapleaflet.map.hide} #i18n{module.forms.multiviewmapleaflet.map.label.prefix} #i18n{module.forms.multiviewmapleaflet.map.label}' />
     </@button> 
 </@div>
